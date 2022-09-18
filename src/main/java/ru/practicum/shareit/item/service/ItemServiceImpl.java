@@ -1,5 +1,8 @@
 package ru.practicum.shareit.item.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -12,21 +15,18 @@ import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.storage.UserStorage;
 import ru.practicum.shareit.validator.Validator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service("itemServiceImpl")
 public class ItemServiceImpl implements ItemService {
     private ItemStorage storage;
     private UserStorage userStorage;
 
     @Autowired
-    public ItemServiceImpl(@Qualifier("itemInMemoryStorage") ItemStorage storage
-    , @Qualifier("userInMemoryStorage") UserStorage userStorage) {
+    public ItemServiceImpl(@Qualifier("itemInMemoryStorage") ItemStorage storage,
+                           @Qualifier("userInMemoryStorage") UserStorage userStorage) {
         this.storage = storage;
         this.userStorage = userStorage;
     }
+
     @Override
     public ItemDto createItem(ItemDto itemDto) throws NotFoundException {
         Validator.checkUserExistence(itemDto.getOwner(), userStorage);
@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getItemsByOwner(int ownerId) {
         return storage.getAll()
                 .stream()
-                .filter(item -> item.getOwner()==ownerId)
+                .filter(item -> item.getOwner() == ownerId)
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
     }

@@ -1,6 +1,8 @@
 package ru.practicum.shareit.user.controller;
 
-
+import java.util.List;
+import java.util.Map;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,17 +14,14 @@ import ru.practicum.shareit.exception.NotValidEmailException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService service;
+
     @Autowired
-    public UserController(UserService service){
+    public UserController(UserService service) {
         this.service = service;
     }
 
@@ -30,7 +29,7 @@ public class UserController {
     public UserDto getUser(@PathVariable int id) throws NotFoundException {
         log.info("GET /users/{} request received", id);
         UserDto userDto = service.getUserById(id);
-        log.info("GET /users/{} request done",id);
+        log.info("GET /users/{} request done", id);
         return userDto;
     }
 
@@ -50,17 +49,17 @@ public class UserController {
         return createUser;
     }
 
-    @PatchMapping(value="/{userId}")
+    @PatchMapping(value = "/{userId}")
     public UserDto update(@PathVariable int userId,
-                       @RequestBody UserDto userDto) throws NotFoundException, NotValidEmailException
-                                                     , NotUniqueEmailException {
+                       @RequestBody UserDto userDto) throws NotFoundException, NotValidEmailException,
+            NotUniqueEmailException {
         log.info("PATCH /users request received");
         UserDto updateUser = service.updateUser(new UserDto(userId, userDto.getName(), userDto.getEmail()));
         log.info("PATCH /users request done");
         return updateUser;
     }
 
-    @DeleteMapping(value="/{userId}")
+    @DeleteMapping(value = "/{userId}")
     public void delete(@PathVariable int userId) throws NotFoundException {
         log.info("DELETE /users request received");
         service.deleteUser(userId);

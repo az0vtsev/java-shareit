@@ -1,11 +1,10 @@
 package ru.practicum.shareit.user.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 @Getter
 @Setter
@@ -18,8 +17,7 @@ public class UserDto {
     private String name;
 
     @NotBlank(message = "Email is required")
-    @Pattern(regexp = "^(.+)@(\\S+)$"
-            , message = "Must be formatted: mailName@domain")
+    @Pattern(regexp = "^(.+)@(\\S+)$", message = "Must be formatted: mailName@domain")
     private String email;
 
 }

@@ -41,12 +41,14 @@ public class Validator {
             throw new NotValidEmailException("Email isn't valid");
         }
     }
+
     public static void checkEmailIsUnique(String email, UserStorage storage) throws NotUniqueEmailException {
         if (isContainsEmail(email, storage)) {
             throw new NotUniqueEmailException("User with that email already exist");
         }
     }
+
     public static boolean isContainsEmail(String email, UserStorage storage) {
-        return storage.getAll().stream().anyMatch(user-> user.getEmail().equals(email));
+        return storage.getAll().stream().anyMatch(user->user.getEmail().equals(email));
     }
 }

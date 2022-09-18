@@ -1,11 +1,10 @@
 package ru.practicum.shareit.item.storage;
 
-import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.item.model.Item;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.item.model.Item;
 
 @Repository("itemInMemoryStorage")
 public class ItemInMemoryStorage implements ItemStorage {
@@ -15,11 +14,12 @@ public class ItemInMemoryStorage implements ItemStorage {
     private Integer getNextId() {
         return ++nextId;
     }
+
     @Override
     public Item create(Item item) {
         int itemId = getNextId();
-        Item newItem = new Item(itemId, item.getOwner(), item.getName(), item.getDescription()
-        , item.getAvailable(), item.getRequest());
+        Item newItem = new Item(itemId, item.getOwner(), item.getName(), item.getDescription(),
+                item.getAvailable(), item.getRequest());
         items.put(itemId, newItem);
         return items.get(newItem.getId());
     }

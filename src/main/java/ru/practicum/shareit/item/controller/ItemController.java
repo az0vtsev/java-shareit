@@ -1,5 +1,8 @@
 package ru.practicum.shareit.item.controller;
 
+import java.util.List;
+import java.util.Map;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,39 +14,35 @@ import ru.practicum.shareit.exception.NotItemOwnerException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequestMapping("/items")
 public class ItemController {
     private ItemService service;
+
     @Autowired
     public ItemController(@Qualifier("itemServiceImpl") ItemService service) {
         this.service = service;
     }
+
     @PostMapping
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") int userId,
                               @Valid @RequestBody ItemDto itemDto) throws NotFoundException {
         log.info("POST /items/ request received");
-        ItemDto createItemDto = service.createItem(new ItemDto(0, userId, itemDto.getName()
-                , itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest()));
+        ItemDto createItemDto = service.createItem(new ItemDto(0, userId, itemDto.getName(),
+                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest()));
         log.info("POST /items/ request done");
         return createItemDto;
     }
+
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") int userId,
                               @PathVariable int itemId,
                               @RequestBody ItemDto itemDto)
             throws NotFoundException, NotItemOwnerException {
         log.info("PATCH /items/{} request received", itemId);
-        ItemDto updateItemDto = service.updateItem(new ItemDto(itemId, userId, itemDto.getName()
-                , itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest()));
+        ItemDto updateItemDto = service.updateItem(new ItemDto(itemId, userId, itemDto.getName(),
+                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest()));
         log.info("PATCH /items/{} request done", itemId);
         return updateItemDto;
     }
@@ -80,6 +79,7 @@ public class ItemController {
         log.info("GET /items/search request done");
         return itemsDto;
     }
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(final NotFoundException e) {
@@ -89,6 +89,7 @@ public class ItemController {
                 "errorMessage", e.getMessage()
         );
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
