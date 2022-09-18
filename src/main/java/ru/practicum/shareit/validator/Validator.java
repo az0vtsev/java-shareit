@@ -10,9 +10,9 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 public class Validator {
     public static void checkUserExistence(int userId, UserStorage storage) throws NotFoundException {
-            if (storage.getAll().stream().map(UserMapper::mapToUserDto).noneMatch(user -> user.getId() == userId)) {
-                throw new NotFoundException("User id=" + userId + " not found");
-            }
+        if (storage.getAll().stream().map(UserMapper::mapToUserDto).noneMatch(user -> user.getId() == userId)) {
+            throw new NotFoundException("User id=" + userId + " not found");
+        }
     }
 
     public static void ownerAuthorization(int itemId, int userId, UserStorage userStorage, ItemStorage itemStorage)
@@ -49,6 +49,6 @@ public class Validator {
     }
 
     public static boolean isContainsEmail(String email, UserStorage storage) {
-        return storage.getAll().stream().anyMatch(user->user.getEmail().equals(email));
+        return storage.getAll().stream().anyMatch(user -> user.getEmail().equals(email));
     }
 }
