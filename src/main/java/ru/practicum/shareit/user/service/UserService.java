@@ -1,10 +1,11 @@
 package ru.practicum.shareit.user.service;
 
-import java.util.List;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotUniqueEmailException;
 import ru.practicum.shareit.exception.NotValidEmailException;
 import ru.practicum.shareit.user.dto.UserDto;
+
+import java.util.List;
 
 
 

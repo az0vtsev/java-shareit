@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Repository("userInMemoryStorage")
-public class UserInMemoryStorage implements UserStorage {
+public class UserInMemoryStorage {
     private int nextId = 0;
     private HashMap<Integer, User> users = new HashMap<>();
 
@@ -16,17 +16,14 @@ public class UserInMemoryStorage implements UserStorage {
         return ++nextId;
     }
 
-    @Override
     public User getById(int id) {
         return users.get(id);
     }
 
-    @Override
     public List<User> getAll() {
         return new ArrayList<>(users.values());
     }
 
-    @Override
     public User create(User user) {
         int userId = getNextId();
         User newUser = new User(userId, user.getName(), user.getEmail());
@@ -34,13 +31,11 @@ public class UserInMemoryStorage implements UserStorage {
         return users.get(newUser.getId());
     }
 
-    @Override
     public User update(User user) {
         users.put(user.getId(), user);
         return users.get(user.getId());
     }
 
-    @Override
     public User delete(int id) {
         return users.remove(id);
     }

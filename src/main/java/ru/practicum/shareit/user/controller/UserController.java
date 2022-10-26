@@ -1,18 +1,16 @@
 package ru.practicum.shareit.user.controller;
 
-import java.util.List;
-import java.util.Map;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotUniqueEmailException;
 import ru.practicum.shareit.exception.NotValidEmailException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -64,56 +62,6 @@ public class UserController {
         log.info("DELETE /users request received");
         service.deleteUser(userId);
         log.info("DELETE /users request done");
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Data isn't valid",
-                "errorMessage", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFoundException(final NotFoundException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Entity not found",
-                "errorMessage", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler(NotUniqueEmailException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleNotUniqueEmailException(final NotUniqueEmailException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Email already exist",
-                "errorMessage", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler(NotValidEmailException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleNotValidEmailException(final NotValidEmailException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Email isn't valid",
-                "errorMessage", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleException(final RuntimeException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Runtime Exception",
-                "errorMessage", e.getMessage()
-        );
     }
 
 }

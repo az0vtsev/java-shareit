@@ -1,18 +1,21 @@
 package ru.practicum.shareit.item.controller;
 
-import java.util.List;
-import java.util.Map;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotItemOwnerException;
+import ru.practicum.shareit.exception.NotValidAuthorCommentException;
+import ru.practicum.shareit.exception.NotValidUserException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemInfoDto;
 import ru.practicum.shareit.item.service.ItemService;
+
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -30,7 +33,7 @@ public class ItemController {
                               @Valid @RequestBody ItemDto itemDto) throws NotFoundException {
         log.info("POST /items/ request received");
         ItemDto createItemDto = service.createItem(new ItemDto(0, userId, itemDto.getName(),
-                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest()));
+                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest(), new ArrayList<>()));
         log.info("POST /items/ request done");
         return createItemDto;
     }
@@ -39,10 +42,10 @@ public class ItemController {
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") int userId,
                               @PathVariable int itemId,
                               @RequestBody ItemDto itemDto)
-            throws NotFoundException, NotItemOwnerException {
+            throws NotFoundException, NotItemOwnerException, NotValidUserException {
         log.info("PATCH /items/{} request received", itemId);
         ItemDto updateItemDto = service.updateItem(new ItemDto(itemId, userId, itemDto.getName(),
-                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest()));
+                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest(), new ArrayList<>()));
         log.info("PATCH /items/{} request done", itemId);
         return updateItemDto;
     }
@@ -50,24 +53,25 @@ public class ItemController {
     @DeleteMapping("/{itemId}")
     public void deleteItem(@RequestHeader("X-Sharer-User-Id") int userId,
                               @PathVariable int itemId)
-            throws NotFoundException, NotItemOwnerException {
+            throws NotFoundException, NotItemOwnerException, NotValidUserException {
         log.info("DELETE /items/{} request received", itemId);
         service.deleteItem(itemId, userId);
         log.info("DELETE /items/{} request done", itemId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable int itemId) throws NotFoundException {
+    public ItemInfoDto getItem(@RequestHeader("X-Sharer-User-Id") int userId,
+                           @PathVariable int itemId) throws NotFoundException {
         log.info("GET /items/{} request received", itemId);
-        ItemDto itemDto = service.getItemById(itemId);
+        ItemInfoDto itemDto = service.getItemById(itemId, userId);
         log.info("GET /items/{} request done", itemId);
         return itemDto;
     }
 
     @GetMapping()
-    public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemInfoDto> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
         log.info("GET /items/ request received");
-        List<ItemDto> itemsDto = service.getItemsByOwner(userId);
+        List<ItemInfoDto> itemsDto = service.getItemsByOwner(userId);
         log.info("GET /items/ request done");
         return itemsDto;
     }
@@ -80,43 +84,15 @@ public class ItemController {
         return itemsDto;
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFoundException(final NotFoundException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Entity not found",
-                "errorMessage", e.getMessage()
-        );
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") int userId,
+                                 @Valid @RequestBody CommentDto commentDto,
+                                 @PathVariable int itemId)
+            throws NotValidAuthorCommentException, NotFoundException {
+        log.info("POST /items/{}/comment request received", itemId);
+        CommentDto comment = service.addComment(itemId, userId, commentDto);
+        log.info("POST /items/{}/comment request done", itemId);
+        return comment;
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Data isn't valid",
-                "errorMessage", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler(NotItemOwnerException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public Map<String, String> handleNotItemOwnerException(final NotItemOwnerException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Not item owner",
-                "errorMessage", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleException(final RuntimeException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Runtime Exception",
-                "errorMessage", e.getMessage()
-        );
-    }
 }
