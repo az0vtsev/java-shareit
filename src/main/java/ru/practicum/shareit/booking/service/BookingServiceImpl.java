@@ -8,7 +8,8 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingStorage;
-import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.exception.NotValidUserException;
+import ru.practicum.shareit.exception.UnsupportedBookingStatusException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.storage.ItemStorage;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("bookingServiceImpl")
+@Service
 public class BookingServiceImpl implements BookingService {
 
     private BookingStorage storage;
@@ -36,8 +37,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingInfoDto createBooking(Integer userId, BookingDto bookingDto)
-            throws NotFoundException, NotValidDateException, UnsupportedBookingDataException {
+    public BookingInfoDto createBooking(Integer userId, BookingDto bookingDto) {
         Validator.checkUserExistence(userId, userStorage);
         int itemId = bookingDto.getItemId();
         Validator.checkItemBookingData(itemId,userId, itemStorage);
@@ -51,8 +51,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingInfoDto updateBookingStatus(Integer userId, Integer bookingId, Boolean approved)
-            throws NotFoundException, NotValidUserException, UnsupportedBookingDataException {
+    public BookingInfoDto updateBookingStatus(Integer userId, Integer bookingId, Boolean approved) {
         Validator.checkUserExistence(userId, userStorage);
         Validator.checkBookingExistence(bookingId, storage);
         Booking booking = storage.findById(bookingId).get();
@@ -66,8 +65,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingInfoDto getBookingById(int id, int userId)
-            throws NotFoundException,NotValidUserException {
+    public BookingInfoDto getBookingById(int id, int userId) {
         Validator.checkBookingExistence(id,storage);
         Booking booking = storage.findById(id).get();
         int booker = booking.getBooker();
@@ -81,8 +79,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingInfoDto> getUserBookings(int userId, String state)
-            throws UnsupportedBookingStatusException, NotFoundException {
+    public List<BookingInfoDto> getUserBookings(int userId, String state) {
         Validator.checkUserExistence(userId, userStorage);
         LocalDateTime dateTime = LocalDateTime.now();
         List<Booking> bookings;
@@ -121,8 +118,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingInfoDto> getUserItemsBookings(int userId, String state)
-            throws UnsupportedBookingStatusException, NotFoundException {
+    public List<BookingInfoDto> getUserItemsBookings(int userId, String state) {
         Validator.checkUserExistence(userId, userStorage);
         LocalDateTime dateTime = LocalDateTime.now();
         List<Booking> bookings;

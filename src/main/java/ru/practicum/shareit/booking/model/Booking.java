@@ -5,10 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor

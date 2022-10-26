@@ -6,9 +6,6 @@ import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.NotValidAuthorCommentException;
-import ru.practicum.shareit.exception.NotValidUserException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -24,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service("itemServiceImpl")
+@Service
 public class ItemServiceImpl implements ItemService {
     private ItemStorage storage;
     private UserStorage userStorage;
@@ -42,14 +39,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto createItem(ItemDto itemDto) throws NotFoundException {
+    public ItemDto createItem(ItemDto itemDto) {
         Validator.checkUserExistence(itemDto.getOwner(), userStorage);
         Item createItem = ItemMapper.mapToItem(itemDto);
         return ItemMapper.mapToItemDto(storage.save(createItem));
     }
 
     @Override
-    public ItemDto updateItem(ItemDto itemDto) throws NotFoundException, NotValidUserException {
+    public ItemDto updateItem(ItemDto itemDto) {
         Validator.ownerAuthorization(itemDto.getId(), itemDto.getOwner(), userStorage, storage);
         ItemDto oldItem = ItemMapper.mapToItemDto(storage.findById(itemDto.getId()).get());
         prepareToUpdate(itemDto, oldItem);
@@ -58,13 +55,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void deleteItem(int itemId, int ownerId) throws NotFoundException, NotValidUserException {
+    public void deleteItem(int itemId, int ownerId) {
         Validator.ownerAuthorization(itemId, ownerId, userStorage, storage);
         storage.deleteById(itemId);
     }
 
     @Override
-    public ItemInfoDto getItemById(int id, int userId) throws NotFoundException {
+    public ItemInfoDto getItemById(int id, int userId) {
         Validator.checkItemExistence(id, storage);
         LocalDateTime now = LocalDateTime.now();
         Item item = storage.findById(id).get();
@@ -117,8 +114,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto addComment(int itemId, int userId, CommentDto commentDto)
-            throws NotFoundException, NotValidAuthorCommentException {
+    public CommentDto addComment(int itemId, int userId, CommentDto commentDto) {
         Validator.checkUserExistence(userId, userStorage);
         Validator.checkItemExistence(itemId, storage);
         Validator.checkUserBookingItem(userId, itemId, bookingStorage);

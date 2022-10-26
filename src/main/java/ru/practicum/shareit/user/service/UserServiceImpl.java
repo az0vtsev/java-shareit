@@ -2,9 +2,6 @@ package ru.practicum.shareit.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.NotUniqueEmailException;
-import ru.practicum.shareit.exception.NotValidEmailException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -26,7 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(int id) throws NotFoundException {
+    public UserDto getUserById(int id) {
         Validator.checkUserExistence(id, storage);
         return UserMapper.mapToUserDto(storage.findById(id).get());
     }
@@ -40,14 +37,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-       // Validator.checkEmailIsUnique(userDto.getEmail(), storage);
         User createUser = UserMapper.mapToUser(userDto);
         return UserMapper.mapToUserDto(storage.save(createUser));
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto) throws NotFoundException, NotValidEmailException,
-            NotUniqueEmailException {
+    public UserDto updateUser(UserDto userDto) {
         UserDto oldUser = getUserById(userDto.getId());
         prepareToUpdate(userDto, oldUser);
         User updateUser = UserMapper.mapToUser(userDto);
@@ -55,13 +50,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(int id) throws NotFoundException {
+    public void deleteUser(int id) {
         Validator.checkUserExistence(id, storage);
         storage.deleteById(id);
     }
 
-    private void prepareToUpdate(UserDto updateUser, UserDto oldUser) throws NotValidEmailException,
-            NotUniqueEmailException {
+    private void prepareToUpdate(UserDto updateUser, UserDto oldUser) {
         if (updateUser.getEmail() != null) {
             Validator.checkEmailIsValid(updateUser.getEmail());
             Validator.checkEmailIsUnique(updateUser.getEmail(), storage);
