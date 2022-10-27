@@ -1,23 +1,18 @@
 package ru.practicum.shareit.user.service;
 
-import java.util.List;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.NotUniqueEmailException;
-import ru.practicum.shareit.exception.NotValidEmailException;
 import ru.practicum.shareit.user.dto.UserDto;
 
-
+import java.util.List;
 
 public interface UserService {
 
-    UserDto createUser(UserDto userDto) throws NotUniqueEmailException;
+    UserDto createUser(UserDto userDto);
 
-    UserDto updateUser(UserDto userDto) throws NotFoundException,
-                                        NotValidEmailException, NotUniqueEmailException;
+    UserDto updateUser(UserDto userDto);
 
-    void deleteUser(int id) throws NotFoundException;
+    void deleteUser(int id);
 
-    UserDto getUserById(int id) throws NotFoundException;
+    UserDto getUserById(int id);
 
     List<UserDto> getUsers();
 }

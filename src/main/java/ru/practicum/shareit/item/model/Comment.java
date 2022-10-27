@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -10,26 +11,24 @@ import javax.persistence.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "items")
-public class Item {
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "owner_id")
     @NonNull
-    private Integer owner;
+    private String text;
+
+    @Column(name = "item_id")
+    @NonNull
+    private Integer item;
+
+    @Column(name = "author_id")
+    @NonNull
+    private Integer author;
 
     @NonNull
-    private String name;
-
-    @NonNull
-    private String description;
-
-    @NonNull
-    private Boolean available;
-
-    @Column(name = "request_id")
-    private Integer request;
+    private LocalDateTime created;
 
 }
