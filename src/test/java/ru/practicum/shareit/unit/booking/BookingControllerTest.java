@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -19,6 +20,7 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.ErrorHandler;
 import ru.practicum.shareit.exception.UnsupportedBookingStatusException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -65,6 +67,7 @@ public class BookingControllerTest {
     @BeforeEach
     public void createData() {
         mvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(ErrorHandler.class)
                 .build();
         user1 = new User(1, "name1", "email1@mail.com");
         user2 = new User(2,"name2", "email2@mail.com");
@@ -161,12 +164,25 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldThrows() {
+    public void shouldThrowsException() {
         when(service.getUserItemsBookings(anyInt(), anyString(), anyInt(), anyInt()))
                 .thenThrow(UnsupportedBookingStatusException.class);
         Optional<String> state = Optional.of("unsupported");
         assertThrows(UnsupportedBookingStatusException.class,
                 () -> controller.getUserItemsBookings(1, state, 0, 10));
+    }
+
+    @Test
+    public void shouldThrowsUnsupportedBookingStatusException() throws Exception {
+        Optional<String> state = Optional.of("unsupported");
+        when(service.getUserItemsBookings(anyInt(), anyString(), anyInt(), anyInt()))
+                .thenThrow(new UnsupportedBookingStatusException("UNSUPPORTED_STATUS"));
+        mvc.perform(get("/bookings/owner?state={state}&from={from}&size={size}",state, 0, 10)
+                        .header("X-Sharer-User-Id", user1.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().is(400));
     }
 
 }

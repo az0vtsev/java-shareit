@@ -20,7 +20,6 @@ public class ItemRequest {
     @NonNull
     private String description;
     @Column(name = "requestor_id")
-    @NonNull
     private int requestor;
     @NonNull
     private LocalDateTime created;
