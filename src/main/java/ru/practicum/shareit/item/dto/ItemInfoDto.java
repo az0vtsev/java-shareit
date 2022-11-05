@@ -21,7 +21,7 @@ public class ItemInfoDto {
     private String description;
     @NotNull(message = "Available is required")
     private Boolean available;
-    private Integer request;
+    private Integer requestId;
     private List<CommentDto> comments;
     private BookingItemDto lastBooking;
     private BookingItemDto nextBooking;

@@ -2,16 +2,20 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInfoDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping(path = "/bookings")
 public class BookingController {
@@ -52,20 +56,24 @@ public class BookingController {
 
     @GetMapping
     public List<BookingInfoDto> getUserBookings(@RequestHeader("X-Sharer-User-Id") int userId,
-                                            @RequestParam(required = false) Optional<String> state) {
+                                                @RequestParam(required = false) Optional<String> state,
+                                                @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                                @Positive @RequestParam(defaultValue = "10") int size) {
         String stateParam = state.isEmpty() ? "ALL" : state.get();
         log.info("GET /bookings?state={} request received", state);
-        List<BookingInfoDto> bookings = service.getUserBookings(userId, stateParam);
+        List<BookingInfoDto> bookings = service.getUserBookings(userId, stateParam, from, size);
         log.info("GET /bookings?state={} request done", state);
         return bookings;
     }
 
     @GetMapping("/owner")
     public List<BookingInfoDto> getUserItemsBookings(@RequestHeader("X-Sharer-User-Id") int userId,
-                                                @RequestParam(required = false) Optional<String> state) {
+                                                     @RequestParam(required = false) Optional<String> state,
+                                                     @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                                     @Positive @RequestParam(defaultValue = "10") int size) {
         String stateParam = state.isEmpty() ? "ALL" : state.get();
         log.info("GET /bookings/owner?state={} request received", state);
-        List<BookingInfoDto> itemsBookings = service.getUserItemsBookings(userId, stateParam);
+        List<BookingInfoDto> itemsBookings = service.getUserItemsBookings(userId, stateParam, from, size);
         log.info("GET /bookings/owner?state={} request done", state);
         return itemsBookings;
     }

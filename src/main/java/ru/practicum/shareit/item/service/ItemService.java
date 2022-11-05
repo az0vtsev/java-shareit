@@ -16,9 +16,9 @@ public interface ItemService {
 
     ItemInfoDto getItemById(int id, int userId);
 
-    List<ItemInfoDto> getItemsByOwner(int ownerId);
+    List<ItemInfoDto> getItemsByOwner(int ownerId, int from, int size);
 
-    List<ItemDto> getItemsBySearch(String text);
+    List<ItemDto> getItemsBySearch(String text, int from, int size);
 
     CommentDto addComment(int itemId, int userId, CommentDto commentDto);
 }

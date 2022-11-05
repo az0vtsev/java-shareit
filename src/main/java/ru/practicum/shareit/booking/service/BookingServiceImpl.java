@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInfoDto;
@@ -79,36 +81,41 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingInfoDto> getUserBookings(int userId, String state) {
+    public List<BookingInfoDto> getUserBookings(int userId, String state, int from, int size) {
         Validator.checkUserExistence(userId, userStorage);
+        int page = from / size;
+        PageRequest pageRequest = PageRequest.of(page, size);
         LocalDateTime dateTime = LocalDateTime.now();
-        List<Booking> bookings;
+        Page<Booking> bookingsPage;
         switch (state) {
             case "ALL":
-                bookings = storage.findByBookerOrderByStartDesc(userId);
+                bookingsPage = storage.findByBookerOrderByStartDesc(userId, pageRequest);
                 break;
             case "WAITING":
-                bookings = storage.findByBookerAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                bookingsPage = storage.findByBookerAndStatusOrderByStartDesc(userId,
+                                                                             BookingStatus.WAITING, pageRequest);
                 break;
             case "REJECTED":
-                bookings = storage.findByBookerAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                bookingsPage = storage.findByBookerAndStatusOrderByStartDesc(userId,
+                                                                             BookingStatus.REJECTED, pageRequest);
                 break;
             case "PAST":
-                bookings = storage.findByBookerAndEndIsBeforeOrderByStartDesc(userId, dateTime);
+                bookingsPage = storage.findByBookerAndEndIsBeforeOrderByStartDesc(userId, dateTime, pageRequest);
                 break;
-            case "CURRENT" :
-                bookings = storage.findByBookerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                        dateTime, dateTime);
+            case "CURRENT":
+                bookingsPage = storage.findByBookerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
+                        dateTime, dateTime, pageRequest);
                 break;
             case "FUTURE":
-                bookings = storage.findByBookerAndStartIsGreaterThanEqualOrderByStartDesc(userId, dateTime);
+                bookingsPage = storage.findByBookerAndStartIsGreaterThanEqualOrderByStartDesc(userId,
+                        dateTime, pageRequest);
                 break;
             default:
                 throw new UnsupportedBookingStatusException("Unknown state: " + state);
 
         }
         List<BookingInfoDto> bookingsInfoDto = new ArrayList<>();
-        for (Booking booking: bookings) {
+        for (Booking booking: bookingsPage.getContent()) {
             UserDto userDto = UserMapper.mapToUserDto(userStorage.findById(booking.getBooker()).get());
             ItemDto itemDto = ItemMapper.mapToItemDto(itemStorage.findById(booking.getItem()).get());
             BookingInfoDto bookingInfoDto = BookingMapper.mapToBookingInfoDto(booking, itemDto, userDto);
@@ -118,34 +125,36 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingInfoDto> getUserItemsBookings(int userId, String state) {
+    public List<BookingInfoDto> getUserItemsBookings(int userId, String state, int from, int size) {
         Validator.checkUserExistence(userId, userStorage);
+        int page = from / size;
+        PageRequest pageRequest = PageRequest.of(page, size);
         LocalDateTime dateTime = LocalDateTime.now();
-        List<Booking> bookings;
+        Page<Booking> bookingsPage;
         switch (state) {
             case "ALL":
-                bookings = storage.findUserBookings(userId);
+                bookingsPage = storage.findUserBookings(userId, pageRequest);
                 break;
             case "WAITING":
-                bookings = storage.findUserBookingsByStatus(userId, BookingStatus.WAITING);
+                bookingsPage = storage.findUserBookingsByStatus(userId, BookingStatus.WAITING, pageRequest);
                 break;
             case "REJECTED":
-                bookings = storage.findUserBookingsByStatus(userId, BookingStatus.REJECTED);
+                bookingsPage = storage.findUserBookingsByStatus(userId, BookingStatus.REJECTED, pageRequest);
                 break;
             case "PAST":
-                bookings = storage.findUserBookingsPast(userId, dateTime);
+                bookingsPage = storage.findUserBookingsPast(userId, dateTime, pageRequest);
                 break;
             case "CURRENT":
-                bookings = storage.findUserBookingsCurrent(userId, dateTime);
+                bookingsPage = storage.findUserBookingsCurrent(userId, dateTime, pageRequest);
                 break;
             case "FUTURE":
-                bookings = storage.findUserBookingsFuture(userId, dateTime);
+                bookingsPage = storage.findUserBookingsFuture(userId, dateTime, pageRequest);
                 break;
             default:
                 throw new UnsupportedBookingStatusException("Unknown state: " + state);
         }
         List<BookingInfoDto> bookingsInfoDto = new ArrayList<>();
-        for (Booking booking: bookings) {
+        for (Booking booking: bookingsPage.getContent()) {
             UserDto userDto = UserMapper.mapToUserDto(userStorage.findById(booking.getBooker()).get());
             ItemDto itemDto = ItemMapper.mapToItemDto(itemStorage.findById(booking.getItem()).get());
             BookingInfoDto bookingInfoDto = BookingMapper.mapToBookingInfoDto(booking, itemDto, userDto);

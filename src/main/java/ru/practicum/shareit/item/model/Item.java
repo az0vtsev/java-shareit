@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -30,6 +31,6 @@ public class Item {
     private Boolean available;
 
     @Column(name = "request_id")
-    private Integer request;
+    private Integer requestId;
 
 }

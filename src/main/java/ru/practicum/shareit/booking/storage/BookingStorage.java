@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.storage;
 
-import lombok.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,49 +11,52 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingStorage extends JpaRepository<Booking, Integer> {
-    List<Booking> findByBookerOrderByStartDesc(int booker);
+    Page<Booking> findByBookerOrderByStartDesc(int booker, Pageable pageable);
 
     List<Booking> findByBookerAndItemAndEndIsBefore(int booker, int item, LocalDateTime end);
 
-    List<Booking> findByBookerAndStatusOrderByStartDesc(int booker, @NonNull BookingStatus status);
+    Page<Booking> findByBookerAndStatusOrderByStartDesc(int booker, BookingStatus status, Pageable pageable);
 
-    List<Booking> findByBookerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(int booker, @NonNull LocalDateTime start,
-                                                                    @NonNull LocalDateTime end);
+    Page<Booking> findByBookerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(int booker,
+                                                                            LocalDateTime start, LocalDateTime end,
+                                                                            Pageable pageable);
 
-    List<Booking> findByBookerAndStartIsAfterOrderByStartDesc(int booker, @NonNull LocalDateTime start);
+    Page<Booking> findByBookerAndStartIsAfterOrderByStartDesc(int booker, LocalDateTime start,
+                                                              Pageable pageable);
 
-    List<Booking> findByBookerAndStartIsGreaterThanEqualOrderByStartDesc(int booker, @NonNull LocalDateTime start);
+    Page<Booking> findByBookerAndStartIsGreaterThanEqualOrderByStartDesc(int booker, LocalDateTime start,
+                                                                         Pageable pageable);
 
-    List<Booking> findByBookerAndEndIsBeforeOrderByStartDesc(int booker, @NonNull LocalDateTime start);
+    Page<Booking> findByBookerAndEndIsBeforeOrderByStartDesc(int booker, LocalDateTime start, Pageable pageable);
 
     @Query(" select b from Booking b, Item i "
             + "where b.item = i.id and i.owner = ?1 "
             + "order by b.start desc ")
-    List<Booking> findUserBookings(int userId);
+    Page<Booking> findUserBookings(int userId, Pageable pageable);
 
     @Query(" select b from Booking b, Item i "
             + "where b.item = i.id and i.owner = ?1 "
             + "and b.status = ?2 "
             + "order by b.start desc ")
-    List<Booking> findUserBookingsByStatus(int userId, BookingStatus status);
+    Page<Booking> findUserBookingsByStatus(int userId, BookingStatus status, Pageable pageable);
 
     @Query(" select b from Booking b, Item i "
             + "where b.item = i.id and i.owner = ?1 "
             + "and b.end <= ?2 "
             + "order by b.start desc ")
-    List<Booking> findUserBookingsPast(int userId, LocalDateTime now);
+    Page<Booking> findUserBookingsPast(int userId, LocalDateTime now, Pageable pageable);
 
     @Query(" select b from Booking b, Item i "
             + "where ( b.item = i.id and i.owner = ?1 )"
             + "and ( b.start <= ?2 and b.end >= ?2)"
             + "order by b.start desc ")
-    List<Booking> findUserBookingsCurrent(int userId, LocalDateTime now);
+    Page<Booking> findUserBookingsCurrent(int userId, LocalDateTime now, Pageable pageable);
 
     @Query(" select b from Booking b, Item i "
             + "where b.item = i.id and i.owner = ?1 "
             + "and b.start >= ?2 "
             + "order by b.start desc ")
-    List<Booking> findUserBookingsFuture(int userId, LocalDateTime now);
+    Page<Booking> findUserBookingsFuture(int userId, LocalDateTime now, Pageable pageable);
 
     List<Booking> findByItemAndEndIsBeforeOrderByEndDesc(int item, LocalDateTime end);
 

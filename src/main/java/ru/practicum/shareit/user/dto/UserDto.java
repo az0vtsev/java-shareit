@@ -2,15 +2,18 @@ package ru.practicum.shareit.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-
-    private final int id;
+    @Positive
+    private int id;
 
     @NotBlank(message = "User name is required")
     private String name;

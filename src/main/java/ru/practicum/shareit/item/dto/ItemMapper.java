@@ -14,7 +14,7 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                item.getRequest(),
+                item.getRequestId(),
                 new ArrayList<>());
     }
 
@@ -25,7 +25,7 @@ public class ItemMapper {
                itemDto.getName(),
                itemDto.getDescription(),
                itemDto.getAvailable(),
-               itemDto.getRequest()
+               itemDto.getRequestId()
        );
     }
 
@@ -37,10 +37,20 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                item.getRequest(),
+                item.getRequestId(),
                 new ArrayList<>(),
                 bookingPrev,
                 bookingNext
+        );
+    }
+
+    public static RequestItemDto mapToRequestItemDto(Item item) {
+        return new RequestItemDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                item.getRequestId()
         );
     }
 }
