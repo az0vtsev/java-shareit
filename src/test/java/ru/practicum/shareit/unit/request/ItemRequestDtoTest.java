@@ -28,9 +28,6 @@ public class ItemRequestDtoTest {
                 .isEqualTo(itemRequestDto.getDescription());
         assertThat(result).extractingJsonPathNumberValue("$.requestor")
                 .isEqualTo(itemRequestDto.getRequestor());
-        assertThat(result).extractingJsonPathStringValue("$.created")
-                .isEqualTo(itemRequestDto.getCreated().toString());
-
     }
 
     @Test
