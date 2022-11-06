@@ -12,7 +12,7 @@ import javax.validation.constraints.Positive;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-    @Positive
+
     private int id;
 
     @NotBlank(message = "User name is required")
