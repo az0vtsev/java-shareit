@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.item.controller.ItemController;
+import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.user.controller.UserController;
 
 import java.util.Map;
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {BookingController.class, ItemController.class, UserController.class})
+@RestControllerAdvice(assignableTypes = {BookingController.class, ItemController.class,
+        UserController.class, ItemRequestController.class})
 public class ErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -115,7 +117,7 @@ public class ErrorHandler {
                 "errorMessage", e.getMessage()
         );
     }
-
+/*
     @ExceptionHandler(NotItemOwnerException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, String> handleNotItemOwnerException(final NotItemOwnerException e) {
@@ -125,5 +127,8 @@ public class ErrorHandler {
                 "errorMessage", e.getMessage()
         );
     }
+
+ */
+
 
 }

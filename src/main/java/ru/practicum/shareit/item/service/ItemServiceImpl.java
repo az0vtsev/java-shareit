@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -63,12 +65,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemInfoDto getItemById(int id, int userId) {
         Validator.checkItemExistence(id, storage);
+        Validator.checkUserExistence(userId, userStorage);
         LocalDateTime now = LocalDateTime.now();
         Item item = storage.findById(id).get();
-        UserDto userDto = UserMapper.mapToUserDto(userStorage.findById(userId).get());
+        UserDto userDto;
         ItemDto itemDto = ItemMapper.mapToItemDto(item);
         ItemInfoDto itemInfoDto;
         if (item.getOwner() == userId) {
+            userDto = UserMapper.mapToUserDto(userStorage.findById(userId).get());
             List<Booking> bookingsPrev = bookingStorage
                     .findByItemAndEndIsBeforeOrderByEndDesc(item.getId(), now);
             List<Booking> bookingsNext = bookingStorage
@@ -81,6 +85,7 @@ public class ItemServiceImpl implements ItemService {
                             bookingsNext.get(0).getBooker()) : null;
             itemInfoDto = ItemMapper.mapToItemInfoDto(item, userDto, bookingPrevDto, bookingNextDto);
         } else {
+            userDto = UserMapper.mapToUserDto(userStorage.findById(item.getOwner()).get());
             itemInfoDto = ItemMapper.mapToItemInfoDto(item, userDto, null, null);
         }
         itemInfoDto.setComments(getCommentsByItemId(id));
@@ -88,12 +93,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemInfoDto> getItemsByOwner(int ownerId) {
+    public List<ItemInfoDto> getItemsByOwner(int ownerId, int from, int size) {
+        int page = from / size;
+        PageRequest pageRequest = PageRequest.of(page, size);
         LocalDateTime now = LocalDateTime.now();
-        List<Item> items = storage.findByOwnerOrderById(ownerId);
+        Page<Item> items = storage.findByOwnerOrderById(ownerId, pageRequest);
         List<ItemInfoDto> itemsDto = new ArrayList<>();
         UserDto userDto = UserMapper.mapToUserDto(userStorage.findById(ownerId).get());
-        for (Item item : items) {
+        for (Item item : items.getContent()) {
             ItemDto itemDto = ItemMapper.mapToItemDto(item);
             List<Booking> bookingsPrev = bookingStorage
                     .findByItemAndEndIsBeforeOrderByEndDesc(item.getId(), now);
@@ -128,15 +135,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsBySearch(String text) {
+    public List<ItemDto> getItemsBySearch(String text, int from, int size) {
         if (text == null || text.isEmpty()) {
             return new ArrayList<>();
         }
-        return getItemsByText(text);
+        return getItemsByText(text, from, size);
     }
 
-    private List<ItemDto> getItemsByText(String text) {
-        return storage.search(text)
+    private List<ItemDto> getItemsByText(String text, int from, int size) {
+        int page = from / size;
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return storage.search(text, pageRequest)
                 .stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());

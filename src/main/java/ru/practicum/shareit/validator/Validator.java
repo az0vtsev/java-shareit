@@ -6,6 +6,7 @@ import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.request.storage.ItemRequestStorage;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
@@ -92,6 +93,12 @@ public class Validator {
                .findByBookerAndItemAndEndIsBefore(userId, itemId, LocalDateTime.now());
         if (result.isEmpty()) {
             throw new NotValidAuthorCommentException("User id=" + userId + " isn't booker of item id=" + itemId);
+        }
+    }
+
+    public static void checkItemRequestExistence(int requestId, ItemRequestStorage itemRequestStorage) {
+        if (!itemRequestStorage.existsById(requestId)) {
+            throw new NotFoundException("ItemRequest id=" + requestId + " not found");
         }
     }
 }

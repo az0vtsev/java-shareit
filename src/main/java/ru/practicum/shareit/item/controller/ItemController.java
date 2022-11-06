@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -9,10 +10,13 @@ import ru.practicum.shareit.item.dto.ItemInfoDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/items")
 public class ItemController {
@@ -28,7 +32,7 @@ public class ItemController {
                               @Valid @RequestBody ItemDto itemDto) {
         log.info("POST /items/ request received");
         ItemDto createItemDto = service.createItem(new ItemDto(0, userId, itemDto.getName(),
-                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest(), new ArrayList<>()));
+                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequestId(), new ArrayList<>()));
         log.info("POST /items/ request done");
         return createItemDto;
     }
@@ -39,7 +43,7 @@ public class ItemController {
                               @RequestBody ItemDto itemDto) {
         log.info("PATCH /items/{} request received", itemId);
         ItemDto updateItemDto = service.updateItem(new ItemDto(itemId, userId, itemDto.getName(),
-                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequest(), new ArrayList<>()));
+                itemDto.getDescription(), itemDto.getAvailable(), itemDto.getRequestId(), new ArrayList<>()));
         log.info("PATCH /items/{} request done", itemId);
         return updateItemDto;
     }
@@ -62,17 +66,21 @@ public class ItemController {
     }
 
     @GetMapping()
-    public List<ItemInfoDto> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemInfoDto> getItems(@RequestHeader("X-Sharer-User-Id") int userId,
+                                      @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                      @Positive @RequestParam(defaultValue = "10") int size) {
         log.info("GET /items/ request received");
-        List<ItemInfoDto> itemsDto = service.getItemsByOwner(userId);
+        List<ItemInfoDto> itemsDto = service.getItemsByOwner(userId, from, size);
         log.info("GET /items/ request done");
         return itemsDto;
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getItemsBySearch(@RequestParam(required = false) String text) {
+    public List<ItemDto> getItemsBySearch(@RequestParam(required = false) String text,
+                                          @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                          @Positive @RequestParam(defaultValue = "10") int size) {
         log.info("GET /items/search request received");
-        List<ItemDto> itemsDto = service.getItemsBySearch(text);
+        List<ItemDto> itemsDto = service.getItemsBySearch(text, from, size);
         log.info("GET /items/search request done");
         return itemsDto;
     }
