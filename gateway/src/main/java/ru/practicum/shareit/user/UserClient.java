@@ -37,7 +37,7 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> updateUser(int id, UserDto userDto) {
-        String path = "/"+id;
+        String path = "/" + id;
         return patch(path, userDto);
     }
 
