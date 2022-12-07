@@ -7,11 +7,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingState;
+import ru.practicum.shareit.validator.Validator;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -19,7 +19,7 @@ import java.util.Optional;
 @Slf4j
 @Validated
 public class BookingController {
-	private final BookingClient bookingClient;
+    private final BookingClient bookingClient;
 
 	@GetMapping
 	public ResponseEntity<Object> getUserBookings(@Positive @RequestHeader("X-Sharer-User-Id") int userId,
@@ -42,7 +42,8 @@ public class BookingController {
 	@PostMapping
 	public ResponseEntity<Object> createBooking(@Positive @RequestHeader("X-Sharer-User-Id") int userId,
 			@RequestBody @Valid BookingDto bookingDto) {
-		log.info("POST /bookings/ request received");
+		log.info("POST /bookings/ request received, userId={}", userId);
+		Validator.checkDateTimeCreated(bookingDto.getStart(), bookingDto.getEnd());
 		return bookingClient.createBooking(userId, bookingDto);
 	}
 
@@ -56,11 +57,11 @@ public class BookingController {
 
 	@GetMapping("/owner")
 	public ResponseEntity<Object> getUserItemsBookings(@Positive @RequestHeader("X-Sharer-User-Id") int userId,
-													 @RequestParam(required = false) Optional<String> state,
+													 @RequestParam(name = "state", defaultValue = "ALL")
+													 String stateParam,
 													 @PositiveOrZero @RequestParam(defaultValue = "0") int from,
 													 @Positive @RequestParam(defaultValue = "10") int size) {
-		log.info("GET /bookings/owner?state={} request received", state);
-		String stateParam = state.isEmpty() ? "ALL" : state.get();
+		log.info("GET /bookings/owner?state={} request received", stateParam);
 		BookingState bookingState = BookingState.from(stateParam)
 				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
 		return bookingClient.getUserItemBookings(userId, bookingState, from, size);

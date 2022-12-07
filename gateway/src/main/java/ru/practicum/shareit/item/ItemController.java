@@ -63,7 +63,7 @@ public class ItemController {
                                           @RequestParam(required = false) String text,
                                           @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                           @Positive @RequestParam(defaultValue = "10") int size) {
-        log.info("GET /items/search request received");
+        log.info("GET /items/search?text={}&from={}&size{} request received", text, from, size);
         return itemClient.getItemsBySearch(userId, text, from, size);
     }
 

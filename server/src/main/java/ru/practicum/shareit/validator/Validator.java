@@ -66,11 +66,6 @@ public class Validator {
         }
     }
 
-    public static void checkEmailIsValid(String email) {
-        if (!email.matches("^(.+)@(\\S+)$")) {
-            throw new NotValidEmailException("Email isn't valid");
-        }
-    }
 
     public static void checkEmailIsUnique(String email, UserStorage storage) {
         if (isContainsEmail(email, storage)) {
@@ -80,12 +75,6 @@ public class Validator {
 
     public static boolean isContainsEmail(String email, UserStorage storage) {
         return storage.findAll().stream().anyMatch(user -> user.getEmail().equals(email));
-    }
-
-    public static void checkDateTimeCreated(LocalDateTime start, LocalDateTime end) {
-        if (start.isAfter(end) || start.isEqual(end)) {
-            throw new NotValidDateException("Date time isn't valid");
-        }
     }
 
     public static void checkUserBookingItem(int userId, int itemId, BookingStorage bookingStorage) {

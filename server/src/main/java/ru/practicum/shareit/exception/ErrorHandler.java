@@ -47,16 +47,6 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler(NotValidDateException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleNotValidDateException(final NotValidDateException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Data isn't valid",
-                "errorMessage", e.getMessage()
-        );
-    }
-
     @ExceptionHandler(UnsupportedBookingStatusException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleUnsupportedBookingStatusException(final UnsupportedBookingStatusException e) {
@@ -98,15 +88,6 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler(NotValidEmailException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleNotValidEmailException(final NotValidEmailException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Email isn't valid",
-                "errorMessage", e.getMessage()
-        );
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -117,18 +98,5 @@ public class ErrorHandler {
                 "errorMessage", e.getMessage()
         );
     }
-/*
-    @ExceptionHandler(NotItemOwnerException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public Map<String, String> handleNotItemOwnerException(final NotItemOwnerException e) {
-        log.error(e.getMessage());
-        return Map.of(
-                "error", "Not item owner",
-                "errorMessage", e.getMessage()
-        );
-    }
-
- */
-
 
 }

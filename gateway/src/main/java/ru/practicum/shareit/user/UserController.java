@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.validator.Validator;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -32,20 +33,23 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> create(@Valid @RequestBody UserDto userDto) {
-        log.info("POST /users request");
+        log.info("POST /users request, request body={}", userDto);
         return userClient.createUser(userDto);
     }
 
     @PatchMapping(value = "/{userId}")
     public ResponseEntity<Object> update(@Positive @PathVariable int userId,
                        @RequestBody UserDto userDto) {
-        log.info("PATCH /users request");
+        log.info("PATCH /users/{} request, request body={}", userId, userDto);
+        if (userDto.getEmail() != null) {
+            Validator.checkEmailIsValid(userDto.getEmail());
+        }
         return userClient.updateUser(userId, userDto);
     }
 
     @DeleteMapping(value = "/{userId}")
     public ResponseEntity<Object> delete(@Positive @PathVariable int userId) {
-        log.info("DELETE /users request");
+        log.info("DELETE /users/{} request", userId);
         return userClient.deleteUser(userId);
     }
 }

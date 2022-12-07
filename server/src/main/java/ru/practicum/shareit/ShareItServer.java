@@ -5,9 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ShareItServer {
-
-	public static void main(String[] args) {
-		SpringApplication.run(ShareItServer.class, args);
-	}
+	/*
+	Замечания по кодстайлу относятся к коду, который мы берем из шаблона в ТЗ.
+	Я конечно поправлю, но мне кажется, что это вопрос к тому кто писал шаблон.
+	 */
+    public static void main(String[] args) {
+        SpringApplication.run(ShareItServer.class, args);
+    }
 
 }

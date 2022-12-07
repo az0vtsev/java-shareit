@@ -8,7 +8,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotUniqueEmailException;
-import ru.practicum.shareit.exception.NotValidEmailException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -111,16 +110,6 @@ public class UserServiceImplTest {
         Mockito.when(storage.existsById(anyInt())).thenReturn(false);
         assertThrows(NotFoundException.class, () -> service.updateUser(userDto1));
         Mockito.verify(storage, Mockito.times(1)).existsById(userDto1.getId());
-    }
-
-    @Test
-    public void shouldThrowNotValidEmailExceptionWhileUpdateWrongEmail() {
-        Mockito.when(storage.existsById(anyInt())).thenReturn(true);
-        Mockito.when(storage.findById(anyInt())).thenReturn(Optional.of(user1));
-        userDto1.setEmail("emailmail.com");
-        assertThrows(NotValidEmailException.class, () -> service.updateUser(userDto1));
-        Mockito.verify(storage, Mockito.times(1)).existsById(userDto1.getId());
-        Mockito.verify(storage, Mockito.times(1)).findById(userDto1.getId());
     }
 
     @Test

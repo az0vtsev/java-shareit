@@ -16,7 +16,6 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.booking.storage.BookingStorage;
-import ru.practicum.shareit.exception.NotValidDateException;
 import ru.practicum.shareit.exception.UnsupportedBookingDataException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -339,16 +338,6 @@ public class BookingServiceImplTest {
         Mockito.when(itemStorage.findById(anyInt())).thenReturn(Optional.of(new Item(1, 1, "name",
                 "description", false, null)));
         assertThrows(UnsupportedBookingDataException.class, () -> service.createBooking(2, bookingDto1));
-    }
-
-
-    @Test
-    public void shouldThrowNotValidDateException() {
-        Mockito.when(userStorage.existsById(anyInt())).thenReturn(true);
-        Mockito.when(itemStorage.findById(anyInt())).thenReturn(Optional.of(item1));
-        assertThrows(NotValidDateException.class, () -> service.createBooking(2,
-                new BookingDto(1, LocalDateTime.now(), LocalDateTime.now().minusDays(1),
-                        item1.getId(), user2.getId(), BookingStatus.APPROVED)));
     }
 
 }
