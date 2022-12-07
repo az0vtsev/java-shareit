@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -22,13 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@SpringBootTest(
-        properties = "db.name=test",
-        webEnvironment = SpringBootTest.WebEnvironment.NONE
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class ItemServiceImplTest {
-    //private final EntityManager em;
     private final ItemService service;
     private final UserService userService;
 
@@ -63,15 +62,6 @@ public class ItemServiceImplTest {
         service.createItem(itemDto2);
         service.createItem(itemDto3);
     }
-/*
-    @AfterEach
-    public void dropData() {
-        service.deleteUser(1);
-        service.deleteUser(2);
-    }
-
- */
-
 
     @Test
     public void shouldReturnItemById() {
