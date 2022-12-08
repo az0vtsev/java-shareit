@@ -57,9 +57,6 @@ public class UserServiceImpl implements UserService {
 
     private void prepareToUpdate(UserDto updateUser, UserDto oldUser) {
         if (updateUser.getEmail() != null) {
-            /*
-            Одну валидацию email я перенес, вторая требует запроса к базе.
-             */
             Validator.checkEmailIsUnique(updateUser.getEmail(), storage);
         } else {
             updateUser.setEmail(oldUser.getEmail());

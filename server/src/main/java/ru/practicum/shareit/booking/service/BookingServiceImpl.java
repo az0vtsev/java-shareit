@@ -56,10 +56,6 @@ public class BookingServiceImpl implements BookingService {
         Validator.checkUserExistence(userId, userStorage);
         Validator.checkBookingExistence(bookingId, storage);
         Booking booking = storage.findById(bookingId).get();
-        /*
-        Валидация статуса Approved косвенно проходит через базу данных, т.к. на эндпоинт подается только
-        bookingId => я не могу перенести checkBookingIsApproved в gateway
-         */
         Validator.checkBookingIsApproved(booking);
         int itemId = booking.getItem();
         Validator.checkUserIsOwner(itemId, userId, itemStorage);
